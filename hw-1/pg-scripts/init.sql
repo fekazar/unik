@@ -9,3 +9,6 @@ CREATE TABLE IF NOT EXISTS people(
   car_id INTEGER REFERENCES cars
 );
 
+INSERT INTO cars(year, manufacturer)
+VALUES (1987, 'BMW');
+
