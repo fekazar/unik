@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS cars(
+  id SERIAL PRIMARY KEY,
+  year INTEGER NOT NULL,
+  manufacturer TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS people(
+  id SERIAL,
+  car_id INTEGER REFERENCES cars
+);
+
