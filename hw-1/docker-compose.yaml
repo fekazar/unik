@@ -3,6 +3,7 @@ version: '3.9'
 services:
   db:
     image: postgres:latest
+    container_name: hwdb
     environment:
       - POSTGRES_USER=pg228
       - POSTGRES_PASSWORD=1
