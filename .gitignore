@@ -1,3 +1,4 @@
 **/proj-env/**
 .idea
+*.log
 

@@ -1,7 +1,11 @@
+import datetime
+
 import pika, sys, os
-import json
 
 EMAIL_QUEUE = 'email'
+LOG_FILE = "messages.log"
+
+log_file = open(LOG_FILE, 'a')
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -10,12 +14,10 @@ def main():
     channel.queue_declare(queue=EMAIL_QUEUE)
 
     def callback(ch, method, properties, body):
-        data = json.loads(body)
-        print(data)
+        log_file.write('Received: ' + body.decode() + ' at: ' + str(datetime.datetime.now()) + '\n')
+        log_file.flush()
 
     channel.basic_consume(queue=EMAIL_QUEUE, on_message_callback=callback, auto_ack=True)
-
-    print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
 if __name__ == '__main__':
