@@ -1,4 +1,5 @@
 **/proj-env/**
 .idea
 *.log
+clients.txt
 
