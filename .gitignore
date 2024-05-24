@@ -3,4 +3,5 @@
 *.log
 clients.txt
 __pycache__
+export-secrets.sh
 
