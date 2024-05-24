@@ -20,7 +20,7 @@ def main():
 
     channel.basic_publish(exchange=EXCHANGE,
                           routing_key='',
-                          body='fuck off')
+                          body='{ "timestamp" : 1884, "text" : "hello" }')
 
     connection.close()
 

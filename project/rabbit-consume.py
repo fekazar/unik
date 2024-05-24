@@ -1,4 +1,5 @@
 import pika, sys, os
+import json
 
 EMAIL_QUEUE = 'email'
 
@@ -9,7 +10,8 @@ def main():
     channel.queue_declare(queue=EMAIL_QUEUE)
 
     def callback(ch, method, properties, body):
-        print(f" [x] Received {body}")
+        data = json.loads(body)
+        print(data)
 
     channel.basic_consume(queue=EMAIL_QUEUE, on_message_callback=callback, auto_ack=True)
 
