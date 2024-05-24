@@ -1,12 +1,28 @@
 import requests
 import json
-import redis
+import redis, pika
 import sys, os, time
 
 PARSE_INTERVAL = 10
 KEY = "goodkey"
+EXCHANGE = 'messagesexchange'
 
+# Configuration
 redis_client = redis.Redis()
+rabbit_connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+rabbit_channel = rabbit_connection.channel()
+
+email_res = rabbit_channel.queue_declare(queue='email')
+logs_res = rabbit_channel.queue_declare(queue='logs')
+
+rabbit_channel.exchange_declare(exchange=EXCHANGE,
+                         exchange_type='fanout')
+
+rabbit_channel.queue_bind(exchange=EXCHANGE,
+                   queue=email_res.method.queue)
+
+rabbit_channel.queue_bind(exchange=EXCHANGE,
+                   queue=logs_res.method.queue)
 
 def job():
     time_response = requests.get("https://worldtimeapi.org/api/timezone/Europe/Moscow",
@@ -18,6 +34,10 @@ def job():
     if prev_time != res_time:
         redis_client.set(KEY, res_time)
         print(res_time)
+
+        rabbit_channel.basic_publish(exchange=EXCHANGE,
+                                     routing_key='',
+                                     body=json.dumps({ "text" : res_time }))
 
 def main():
     while (True):
@@ -31,6 +51,7 @@ if __name__ == '__main__':
         print('Interrupted')
         try:
             redis_client.close()
+            rabbit_connection.close()
             sys.exit(0)
         except SystemExit:
             os._exit(0)
