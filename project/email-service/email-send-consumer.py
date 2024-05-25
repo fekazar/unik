@@ -1,6 +1,9 @@
 import pika, sys, os
 import emailassist
 
+RABBIT_HOST = os.getenv('RABBIT_HOST')
+print(RABBIT_HOST)
+
 EMAIL_LOGIN = os.getenv('MAIL_LOGIN')
 EMAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
@@ -15,7 +18,10 @@ with open('clients.txt') as clients_file:
 
 email_sender = emailassist.EmailSender(EMAIL_LOGIN, EMAIL_PASSWORD)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+credentials = pika.PlainCredentials('guest', 'guest')
+connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=credentials))
+#connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@broker:5672"))
+
 channel = connection.channel()
 
 channel.queue_declare(queue=EMAIL_QUEUE)

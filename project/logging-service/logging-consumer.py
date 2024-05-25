@@ -1,6 +1,8 @@
 import datetime
 import pika, sys, os
 
+RABBIT_HOST = os.getenv('RABBIT_HOST')
+
 ERROR_QUEUE = 'errorsqueue'
 ERROR_EXCHANGE = 'errorexchange'
 LOGS_QUEUE = 'logs'
@@ -8,7 +10,10 @@ LOG_FILE = "messages.log"
 
 log_file = open(LOG_FILE, 'a')
 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+credentials = pika.PlainCredentials('guest', 'guest')
+#connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=credentials))
+connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@broker:5672"))
+
 
 channel = connection.channel()
 channel.queue_declare(queue=LOGS_QUEUE)

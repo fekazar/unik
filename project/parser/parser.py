@@ -3,13 +3,19 @@ import json
 import redis, pika
 import sys, os, time
 
+RABBIT_HOST = os.getenv('RABBIT_HOST')
+REDIS_HOST = os.getenv('REDIS_HOST')
+
 PARSE_INTERVAL = 10
 KEY = "goodkey"
 EXCHANGE = 'messagesexchange'
 
 # Configuration
-redis_client = redis.Redis()
-rabbit_connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+redis_client = redis.Redis(REDIS_HOST)
+credentials = pika.PlainCredentials('guest', 'guest')
+rabbit_connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=credentials))
+#rabbit_connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@broker:5672"))
+
 rabbit_channel = rabbit_connection.channel()
 
 email_res = rabbit_channel.queue_declare(queue='email')

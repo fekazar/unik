@@ -2,12 +2,66 @@ services:
   broker:
     image:
       rabbitmq:management
+    container_name: 'broker'
     restart: no
+    expose:
+      - 5672
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - mynetwork
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
   cache:
     image:
       redis:latest
+    expose:
+      - 6379
     ports:
       - "6379:6379"
+    networks:
+      - mynetwork
+
+  #email:
+  #  build:
+  #    context: ./email-service
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - broker
+  #  restart: always
+  #  environment:
+  #    - MAIL_LOGIN=${MAIL_LOGIN}
+  #    - MAIL_PASSWORD=${MAIL_PASSWORD}
+  #    - RABBIT_HOST=broker
+  #  networks:
+  #    - mynetwork
+#
+  #logging:
+  #  build:
+  #    context: ./logging-service
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - broker
+  #  environment:
+  #    - RABBIT_HOST=broker
+  #  networks:
+  #    - mynetwork
+#
+  #parser:
+  #  build:
+  #    context: ./parser
+  #    dockerfile: Dockerfile
+  #  depends_on:
+  #    - broker
+  #    - cache
+  #  environment:
+  #    - RABBIT_HOST=broker
+  #    - REDIS_HOST=cache
+  #  networks:
+  #    - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
