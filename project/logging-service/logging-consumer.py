@@ -6,16 +6,23 @@ RABBIT_HOST = os.getenv('RABBIT_HOST')
 ERROR_QUEUE = 'errorsqueue'
 ERROR_EXCHANGE = 'errorexchange'
 LOGS_QUEUE = 'logs'
-LOG_FILE = "messages.log"
+LOG_FILE = "logs/messages.log"
 
 log_file = open(LOG_FILE, 'a')
 
 credentials = pika.PlainCredentials('guest', 'guest')
-#connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=credentials))
-connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@broker:5672"))
+rabbit_connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=RABBIT_HOST,
+                port=5672,
+                credentials=credentials,
+                heartbeat=0,
+                blocked_connection_timeout=300,
+            )
+        )
 
 
-channel = connection.channel()
+channel = rabbit_connection.channel()
 channel.queue_declare(queue=LOGS_QUEUE)
 channel.queue_declare(queue=ERROR_QUEUE)
 
@@ -44,7 +51,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('Interrupted')
         try:
-            connection.close()
+            rabbit_connection.close()
             sys.exit(0)
         except SystemExit:
             os._exit(0)

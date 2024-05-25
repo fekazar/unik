@@ -13,8 +13,15 @@ EXCHANGE = 'messagesexchange'
 # Configuration
 redis_client = redis.Redis(REDIS_HOST)
 credentials = pika.PlainCredentials('guest', 'guest')
-rabbit_connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=credentials))
-#rabbit_connection = pika.BlockingConnection(pika.URLParameters("amqp://guest:guest@broker:5672"))
+rabbit_connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=RABBIT_HOST,
+                port=5672,
+                credentials=credentials,
+                heartbeat=0,
+                blocked_connection_timeout=300,
+            )
+        )
 
 rabbit_channel = rabbit_connection.channel()
 
