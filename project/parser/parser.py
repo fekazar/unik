@@ -6,7 +6,7 @@ import sys, os, time
 RABBIT_HOST = os.getenv('RABBIT_HOST')
 REDIS_HOST = os.getenv('REDIS_HOST')
 
-PARSE_INTERVAL = 10
+PARSE_INTERVAL = 15
 KEY = "goodkey"
 EXCHANGE = 'messagesexchange'
 
